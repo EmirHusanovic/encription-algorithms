@@ -21,9 +21,9 @@ public class AES {
 
 	private static SecretKeySpec secretKey;
     private static byte[] key;
-    static String clearTextFile = "C:\\Users\\ehusanovic\\Desktop\\data.txt";
-	static String cipherTextFile = "C:\\Users\\ehusanovic\\Desktop\\data2.txt";
-	static String clearTextNewFile = "C:\\Users\\ehusanovic\\Desktop\\data3.txt";
+    static String clearTextFile = "/Users/emir/Desktop/emir.txt";
+	static String cipherTextFile = "/Users/emir/Desktop/emir2.txt";
+	static String clearTextNewFile = "/Users/emir/Desktop/emir3.txt";
  
 	
 	public static void main(String[] args) throws FileNotFoundException {

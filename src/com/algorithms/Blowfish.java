@@ -25,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class Blowfish {
 	
 	private static final byte[] iv = { 11, 22, 33, 44, 99, 88, 77, 66 };
+	File myFile = null;
 	public String filePath = "";
 
 	private static SecretKey setKey() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -37,25 +38,35 @@ public class Blowfish {
 	public void encrypt() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
+		File file = createFile("encr");
+		File file2 = new File(filePath);
+		System.out.println("abs" + file.getAbsolutePath());
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
 		Cipher encryptCipher = Cipher.getInstance("Blowfish");
 		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey());
+		System.out.println("FILE PAHT" + filePath);
 		FileInputStream is = new FileInputStream(filePath);
-		FileOutputStream o = new FileOutputStream(createFile("encr"));
+		FileOutputStream o = new FileOutputStream(file.getAbsolutePath());
 		OutputStream os = new CipherOutputStream(o, encryptCipher);
 		writeData(is, os);
+		deleteFile();
+		file.renameTo(file2);
 	}
 
 	public void decrypt() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
+		File file = createFile("decr");
+		File file2 = new File(filePath);
 		Cipher decryptCipher = Cipher.getInstance("Blowfish");
 		decryptCipher.init(Cipher.DECRYPT_MODE, setKey());
 		FileInputStream ii = new FileInputStream(filePath);
-		FileOutputStream os = new FileOutputStream(createFile("decr"));
+		FileOutputStream os = new FileOutputStream(file.getAbsolutePath());
 		InputStream is = new CipherInputStream(ii, decryptCipher);
 		writeData(is, os);
+		deleteFile();
+		file.renameTo(file2);
 	}
 
 	// utility method to read data from input stream and write to output stream
@@ -70,13 +81,14 @@ public class Blowfish {
 		is.close();
 	}
 
-	private String createFile(String type) {
+	private File createFile(String type) {
 		String pp = getFullPath(filePath) + type + "-" + getFileName(filePath);
 		try {
 			File myObj = new File(pp);
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getAbsolutePath());
-				filePath = myObj.getAbsolutePath();
+//				filePath = myObj.getAbsolutePath();
+				myFile = myObj;
 			} else {
 				System.out.println("File already exists.");
 			}
@@ -84,7 +96,7 @@ public class Blowfish {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
-		return filePath;
+		return myFile;
 	}
 
 	private void deleteFile() {

@@ -18,29 +18,28 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
-public class TripleDES {
+public class Blowfish {
+	
 	private static final byte[] iv = { 11, 22, 33, 44, 99, 88, 77, 66 };
 	public String filePath = "";
 
 	private static SecretKey setKey() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
-		String password = "abcd1234";
+		String password = "woq!6gec";
 		byte[] bytes = password.getBytes();
-		DESedeKeySpec keySpec = new DESedeKeySpec(new byte[24]);
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
-		SecretKey key = keyFactory.generateSecret(keySpec);
-		return key;
+		SecretKeySpec secretKeySpec = new SecretKeySpec(bytes, "Blowfish");
+		return secretKeySpec;
 	}
 
 	public void encrypt() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-		Cipher encryptCipher = Cipher.getInstance("DESede/CBC/NoPadding");
-		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey(), paramSpec);
+		Cipher encryptCipher = Cipher.getInstance("Blowfish");
+		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey());
 		FileInputStream is = new FileInputStream(filePath);
 		FileOutputStream o = new FileOutputStream(createFile("encr"));
 		OutputStream os = new CipherOutputStream(o, encryptCipher);
@@ -51,8 +50,8 @@ public class TripleDES {
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-		Cipher decryptCipher = Cipher.getInstance("DESede/CBC/NoPadding");
-		decryptCipher.init(Cipher.DECRYPT_MODE, setKey(), paramSpec);
+		Cipher decryptCipher = Cipher.getInstance("Blowfish");
+		decryptCipher.init(Cipher.DECRYPT_MODE, setKey());
 		FileInputStream ii = new FileInputStream(filePath);
 		FileOutputStream os = new FileOutputStream(createFile("decr"));
 		InputStream is = new CipherInputStream(ii, decryptCipher);
@@ -117,5 +116,6 @@ public class TripleDES {
 	private String getFullPath(String path) {
 		return path.substring(0, path.lastIndexOf("\\") + 1);
 	}
+
 
 }

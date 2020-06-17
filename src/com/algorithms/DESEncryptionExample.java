@@ -34,14 +34,11 @@ public class DESEncryptionExample {
 //	    private static SecretKeySpec secretKey;
 	private static final byte[] iv = { 11, 22, 33, 44, 99, 88, 77, 66 };
 	static String path = "/Users/emir/Desktop/";
-static	String filePath = "/Users/emir/Desktop/emir.txt";
+static	String filePath = "/Users/emir/Desktop/encrypted-emir.txt";
 
 	public static void main(String[] args) throws InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException, NoSuchPaddingException, FileNotFoundException, IOException {
 		final String secretKey = "ssshhhhhhhhhhh!!!!";
-		String clearTextFile = "/Users/emir/Desktop/emir.txt";
-		String cipherTextFile = "/Users/emir/Desktop/emir2.txt";
-		String clearTextNewFile = "/Users/emir/Desktop/emir3.txt";
-
+		
 		try {
 			// create SecretKey using KeyGenerator
 			SecretKey key = KeyGenerator.getInstance("DES").generateKey();
@@ -56,7 +53,7 @@ static	String filePath = "/Users/emir/Desktop/emir.txt";
 			// method to decrypt encrypted file to clear text file
 			
 			
-			decrypt("/Users/emir/Desktop/encrypted.txt", new FileOutputStream(clearTextNewFile),new IvParameterSpec(iv));
+			decrypt(filePath, new IvParameterSpec(iv));
 			System.out.println("DONE");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -80,18 +77,19 @@ static	String filePath = "/Users/emir/Desktop/emir.txt";
 		Cipher encryptCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
 		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey(), paramSpec);
 		// create CipherOutputStream to encrypt the data using encryptCipher
-		FileOutputStream o = new FileOutputStream(createFile());
+		FileOutputStream o = new FileOutputStream(createFile("encrypted"));
 		OutputStream os = new CipherOutputStream(o, encryptCipher);
 		writeData(is, os);
 	}
 
-	private static void decrypt(String path, OutputStream os, AlgorithmParameterSpec paramSpec)
+	private static void decrypt(String path, AlgorithmParameterSpec paramSpec)
 			throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 		Cipher decryptCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
 		decryptCipher.init(Cipher.DECRYPT_MODE, setKey(), paramSpec);
 		// create CipherOutputStream to decrypt the data using decryptCipher
 		FileInputStream ii = new FileInputStream(path);
+		FileOutputStream os = new FileOutputStream(createFile("decrypted"));
 		InputStream is = new CipherInputStream(ii, decryptCipher);
 		writeData(is, os);
 	}
@@ -108,9 +106,10 @@ static	String filePath = "/Users/emir/Desktop/emir.txt";
 		is.close();
 	}
 
-	private static String createFile() {
-		String filePath = "";
-	String pp  =  path + "encrypted.txt";
+	private static String createFile(String type) {
+
+	String pp  =  path + type + "-" +getFileName(filePath);
+	
 		try {
 			File myObj = new File(pp);
 			if (myObj.createNewFile()) {
@@ -139,6 +138,11 @@ static	String filePath = "/Users/emir/Desktop/emir.txt";
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
+	}
+	
+	private static String getFileName(String path) {
+		return path.substring(path.lastIndexOf("/") + 1);
+		
 	}
 
 }

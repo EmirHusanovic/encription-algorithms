@@ -11,12 +11,10 @@ import javax.crypto.NoSuchPaddingException;
 public class mainC {
 
 	public static void main(String[] args) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidAlgorithmParameterException, IOException {
-//		DESEncryptionExample des = new DESEncryptionExample();
-//		des.filePath = "C:\\Users\\ehusanovic\\Desktop\\emir.txt";
-//		des.encrypt();
-		TripleDES aes = new TripleDES();
-		aes.filePath = "C:\\Users\\ehusanovic\\Desktop\\encr-emir.txt";
-		aes.decrypt();
-	}
 
+		Blowfish aes = new Blowfish();
+		aes.filePath = "/Users/emir/Desktop/emir.txt";
+		aes.decrypt();
+		
+	}
 }

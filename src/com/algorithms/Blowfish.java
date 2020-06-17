@@ -23,7 +23,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Blowfish {
-	
+
 	private static final byte[] iv = { 11, 22, 33, 44, 99, 88, 77, 66 };
 	File myFile = null;
 	public String filePath = "";
@@ -40,11 +40,9 @@ public class Blowfish {
 
 		File file = createFile("encr");
 		File file2 = new File(filePath);
-		System.out.println("abs" + file.getAbsolutePath());
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
 		Cipher encryptCipher = Cipher.getInstance("Blowfish");
 		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey());
-		System.out.println("FILE PAHT" + filePath);
 		FileInputStream is = new FileInputStream(filePath);
 		FileOutputStream o = new FileOutputStream(file.getAbsolutePath());
 		OutputStream os = new CipherOutputStream(o, encryptCipher);
@@ -73,7 +71,6 @@ public class Blowfish {
 	private void writeData(InputStream is, OutputStream os) throws IOException {
 		byte[] buf = new byte[1024];
 		int numRead = 0;
-		// read and write operation
 		while ((numRead = is.read(buf)) >= 0) {
 			os.write(buf, 0, numRead);
 		}
@@ -86,8 +83,7 @@ public class Blowfish {
 		try {
 			File myObj = new File(pp);
 			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getAbsolutePath());
-//				filePath = myObj.getAbsolutePath();
+				System.out.println("File created");
 				myFile = myObj;
 			} else {
 				System.out.println("File already exists.");
@@ -119,15 +115,22 @@ public class Blowfish {
 		if (operSys.contains("win")) {
 			filePath = path.substring(path.lastIndexOf("\\") + 1);
 		} else if (operSys.contains("mac")) {
-			filePath = path.substring(path.lastIndexOf("/"));
+			filePath = path.substring(path.lastIndexOf("/") + 1);
 		}
 		;
+		System.out.println("file" + filePath);
 		return filePath;
 	}
 
 	private String getFullPath(String path) {
-		return path.substring(0, path.lastIndexOf("\\") + 1);
+		String operSys = System.getProperty("os.name").toLowerCase();
+		String filePath = "";
+		if (operSys.contains("win")) {
+			filePath = path.substring(0, path.lastIndexOf("\\") + 1);
+		} else if (operSys.contains("mac")) {
+			filePath = path.substring(0, path.lastIndexOf("/") + 1);
+		}
+		return filePath;
 	}
-
 
 }

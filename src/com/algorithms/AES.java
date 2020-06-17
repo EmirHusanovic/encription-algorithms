@@ -23,6 +23,7 @@ public class AES {
 	private static byte[] key;
 	static String filePath = "";
 	static String secret = "ssshhhhhhhhhhh!!!!";
+	static File myFile = null;
 
 	public static void setKey(String myKey) {
 		MessageDigest sha = null;
@@ -42,12 +43,16 @@ public class AES {
 	public static String encrypt() {
 		try {
 			setKey(secret);
+			File file = createFile("encr");
+			File file2 = new File(filePath);
 			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 			FileInputStream is = new FileInputStream(filePath);
-			FileOutputStream o = new FileOutputStream(createFile("encr"));
+			FileOutputStream o = new FileOutputStream(file.getAbsolutePath());
 			OutputStream os = new CipherOutputStream(o, cipher);
 			writeData(is, os);
+			deleteFile();
+			file.renameTo(file2);
 		} catch (Exception e) {
 			System.out.println("Error while encrypting: " + e.toString());
 		}
@@ -57,12 +62,16 @@ public class AES {
 	public static void decrypt() {
 		try {
 			setKey(secret);
+			File file = createFile("decr");
+			File file2 = new File(filePath);
 			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
 			cipher.init(Cipher.DECRYPT_MODE, secretKey);
 			FileInputStream ii = new FileInputStream(filePath);
-			FileOutputStream os = new FileOutputStream(createFile("decr"));
+			FileOutputStream os = new FileOutputStream(file.getAbsolutePath());
 			InputStream is = new CipherInputStream(ii, cipher);
 			writeData(is, os);
+			deleteFile();
+			file.renameTo(file2);
 		} catch (Exception e) {
 			System.out.println("Error while decrypting: " + e.toString());
 		}
@@ -80,13 +89,14 @@ public class AES {
 		is.close();
 	}
 
-	private static String createFile(String type) {
+	private static File createFile(String type) {
 		String pp = getFullPath(filePath) + type + "-" + getFileName(filePath);
 		try {
 			File myObj = new File(pp);
 			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getAbsolutePath());
-				filePath = myObj.getAbsolutePath();
+				System.out.println("File created");
+//				filePath = myObj.getAbsolutePath();
+				myFile = myObj;
 			} else {
 				System.out.println("File already exists.");
 			}
@@ -94,10 +104,10 @@ public class AES {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
-		return filePath;
+		return myFile;
 	}
 
-	private void deleteFile() {
+	private static void deleteFile() {
 		try {
 			File file = new File(filePath);
 			if (file.delete()) {
@@ -117,13 +127,19 @@ public class AES {
 		if (operSys.contains("win")) {
 			filePath = path.substring(path.lastIndexOf("\\") + 1);
 		} else if (operSys.contains("mac")) {
-			filePath = path.substring(path.lastIndexOf("/"));
-		}
-		;
+			filePath = path.substring(path.lastIndexOf("/") + 1);
+		};
 		return filePath;
 	}
 
 	private static String getFullPath(String path) {
-		return path.substring(0, path.lastIndexOf("\\") + 1);
+		String operSys = System.getProperty("os.name").toLowerCase();
+		String filePath = "";
+		if (operSys.contains("win")) {
+			filePath = path.substring(0, path.lastIndexOf("\\") + 1);
+		} else if (operSys.contains("mac")) {
+			filePath = path.substring(0, path.lastIndexOf("/") + 1);
+		}
+		return filePath;
 	}
 }

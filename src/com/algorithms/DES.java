@@ -20,10 +20,11 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
-public class DESEncryptionExample {
+public class DES {
 
 	private static final byte[] iv = { 11, 22, 33, 44, 99, 88, 77, 66 };
 	public String filePath = "";
+	File myFile = null;
 
 	private static SecretKey setKey() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
 		String password = "abcd1234";
@@ -37,25 +38,33 @@ public class DESEncryptionExample {
 	public void encrypt() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
+		File file = createFile("decr");
+		File file2 = new File(filePath);
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
 		Cipher encryptCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
 		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey(), paramSpec);
 		FileInputStream is = new FileInputStream(filePath);
-		FileOutputStream o = new FileOutputStream(createFile("encr"));
+		FileOutputStream o = new FileOutputStream(file.getAbsolutePath());
 		OutputStream os = new CipherOutputStream(o, encryptCipher);
 		writeData(is, os);
+		deleteFile();
+		file.renameTo(file2);
 	}
 
 	public void decrypt() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
+		File file = createFile("decr");
+		File file2 = new File(filePath);
 		Cipher decryptCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
 		decryptCipher.init(Cipher.DECRYPT_MODE, setKey(), paramSpec);
 		FileInputStream ii = new FileInputStream(filePath);
-		FileOutputStream os = new FileOutputStream(createFile("decr"));
+		FileOutputStream os = new FileOutputStream(file.getAbsolutePath());
 		InputStream is = new CipherInputStream(ii, decryptCipher);
 		writeData(is, os);
+		deleteFile();
+		file.renameTo(file2);
 	}
 
 	// utility method to read data from input stream and write to output stream
@@ -70,13 +79,14 @@ public class DESEncryptionExample {
 		is.close();
 	}
 
-	private String createFile(String type) {
+	private File createFile(String type) {
+		System.out.println("sss" + getFullPath(filePath));
 		String pp = getFullPath(filePath) + type + "-" + getFileName(filePath);
 		try {
 			File myObj = new File(pp);
 			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getAbsolutePath());
-				filePath = myObj.getAbsolutePath();
+				System.out.println("File created");
+				myFile = myObj;
 			} else {
 				System.out.println("File already exists.");
 			}
@@ -84,7 +94,7 @@ public class DESEncryptionExample {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
-		return filePath;
+		return myFile;
 	}
 
 	private void deleteFile() {
@@ -101,18 +111,26 @@ public class DESEncryptionExample {
 		}
 	}
 
-	private String getFileName(String path) {
+	private static String getFileName(String path) {
 		String operSys = System.getProperty("os.name").toLowerCase();
 		String filePath = "";
 		if (operSys.contains("win")) {
 			filePath = path.substring(path.lastIndexOf("\\") + 1);
 		} else if (operSys.contains("mac")) {
-			filePath = path.substring(path.lastIndexOf("/"));
-		};
+			filePath = path.substring(path.lastIndexOf("/") + 1);
+		}
+		;
 		return filePath;
 	}
 
-	private String getFullPath(String path) {
-		return path.substring(0, path.lastIndexOf("\\") + 1);
+	private  static String getFullPath(String path) {
+		String operSys = System.getProperty("os.name").toLowerCase();
+		String filePath = "";
+		if (operSys.contains("win")) {
+			filePath = path.substring(0, path.lastIndexOf("\\") + 1);
+		} else if (operSys.contains("mac")) {
+			filePath = path.substring(0, path.lastIndexOf("/") + 1);
+		}
+		return filePath;
 	}
 }

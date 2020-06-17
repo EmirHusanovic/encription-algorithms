@@ -11,6 +11,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -18,18 +19,18 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
-public class DESEncryptionExample {
-
+public class TripleDES {
 	private static final byte[] iv = { 11, 22, 33, 44, 99, 88, 77, 66 };
 	public String filePath = "";
 
 	private static SecretKey setKey() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
 		String password = "abcd1234";
 		byte[] bytes = password.getBytes();
-		DESKeySpec keySpec = new DESKeySpec(bytes);
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+		DESedeKeySpec  keySpec = new DESedeKeySpec(new byte[24]);
+		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
 		SecretKey key = keyFactory.generateSecret(keySpec);
 		return key;
 	}
@@ -38,7 +39,7 @@ public class DESEncryptionExample {
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-		Cipher encryptCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+		Cipher encryptCipher = Cipher.getInstance("DESede/CBC/NoPadding");
 		encryptCipher.init(Cipher.ENCRYPT_MODE, setKey(), paramSpec);
 		FileInputStream is = new FileInputStream(filePath);
 		FileOutputStream o = new FileOutputStream(createFile("encr"));
@@ -50,7 +51,7 @@ public class DESEncryptionExample {
 			InvalidKeySpecException, InvalidAlgorithmParameterException {
 
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-		Cipher decryptCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+		Cipher decryptCipher = Cipher.getInstance("DESede/CBC/NoPadding");
 		decryptCipher.init(Cipher.DECRYPT_MODE, setKey(), paramSpec);
 		FileInputStream ii = new FileInputStream(filePath);
 		FileOutputStream os = new FileOutputStream(createFile("decr"));
@@ -115,4 +116,5 @@ public class DESEncryptionExample {
 	private String getFullPath(String path) {
 		return path.substring(0, path.lastIndexOf("\\") + 1);
 	}
+
 }
